@@ -1,0 +1,25 @@
+{
+  "name": "brwsrfy-metrics",
+  "version": "0.0.0",
+  "description": "metrics browserified",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "browserify": "browserify node_modules/metrics/index.js --standalone brwsrfy-metrics > brwsrfy-metrics.js",
+    "start": "gulp build"
+  },
+  "author": "tbk",
+  "license": "MIT",
+  "devDependencies": {
+    "gulp": "^3.6.0",
+    "gulp-browserify": "^0.5.0",
+    "gulp-clean": "^0.2.4",
+    "gulp-concat": "^2.2.0",
+    "gulp-inject": "~0.4.1",
+    "gulp-uglify": "^0.2.1",
+    "require-dir": "~0.1.0"
+  },
+  "dependencies": {
+    "metrics": "git://github.com/theborakompanioni/metrics#master"
+  }
+}

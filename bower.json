@@ -1,0 +1,25 @@
+{
+  "name": "brwsrfy-metrics",
+  "version": "0.0.0",
+  "homepage": "https://github.com/theborakompanioni/brwsrfy-metrics",
+  "authors": [
+    "tbk <theborakompanioni+git@gmail.com>"
+  ],
+  "description": "metrics browserified",
+  "main": "dist/brwsrfy-metrics.js",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "metrics",
+    "browserify"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
