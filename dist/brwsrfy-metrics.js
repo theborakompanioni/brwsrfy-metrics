@@ -1,4 +1,14 @@
 !function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.brwsrfyMetrics=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+var Metrics = _dereq_('./node_modules/metrics/metrics'), 
+Report = _dereq_('./node_modules/metrics/reporting/report');
+
+exports.Histogram = Metrics.Histogram;
+exports.Meter = Metrics.Meter;
+exports.Counter = Metrics.Counter;
+exports.Timer = Metrics.Timer;
+exports.Report = Report;
+
+},{"./node_modules/metrics/metrics":6,"./node_modules/metrics/reporting/report":9}],2:[function(_dereq_,module,exports){
 // From http://eloquentjavascript.net/appendix2.html, 
 // licensed under CCv3.0: http://creativecommons.org/licenses/by/3.0/
 
@@ -136,7 +146,7 @@ BinaryHeap.prototype = {
 };
 
 
-},{"./utils":2}],2:[function(_dereq_,module,exports){
+},{"./utils":3}],3:[function(_dereq_,module,exports){
 /*
 /*
  * Mix in the properties on an object to another object
@@ -189,7 +199,7 @@ exports.mixin = (function () {
 })();
 
 
-},{}],3:[function(_dereq_,module,exports){
+},{}],4:[function(_dereq_,module,exports){
 /*
 *  A simple counter object
 */
@@ -230,62 +240,7 @@ Counter.prototype.printObj = function() {
   return {type: 'counter', count: this.count};
 }
 
-},{}],4:[function(_dereq_,module,exports){
-
-exports.Counter = _dereq_('./counter');
-exports.Histogram = _dereq_('./histogram');
-exports.Meter = _dereq_('./meter');
-exports.Timer = _dereq_('./timer');
-
-
-/**
-* trackedMetrics is an object with eventTypes as keys and metrics object as values.
-*/
-
-var _evtparse = function (eventName){
-  var namespaces = eventName.split('.')
-    , name = namespaces.pop()
-    , namespace = namespaces.join('.');
-
-  return {
-    ns: namespace
-  , name: name
-  }
-}
-
-var Report = module.exports = function (trackedMetrics){
-  this.trackedMetrics = trackedMetrics || {};
-}
-
-Report.prototype.addMetric = function(eventName, metric) {
-  var parts = _evtparse(eventName);
-
-  if (!this.trackedMetrics[parts.ns]) {
-    this.trackedMetrics[parts.ns] = {};
-  }
-  if(!this.trackedMetrics[parts.ns][parts.name]) {
-    this.trackedMetrics[parts.ns][parts.name] = metric;
-  }
-}
-
-Report.prototype.getMetric = function (eventName){
-  var parts = _evtparse(eventName);
-  if (!this.trackedMetrics[parts.ns]){ return; }
-  return this.trackedMetrics[parts.ns][parts.name];
-}
-
-Report.prototype.summary = function (){
-  var metricsObj = {};
-  for (namespace in this.trackedMetrics) {
-    metricsObj[namespace] = {};
-    for (name in this.trackedMetrics[namespace]) {
-      metricsObj[namespace][name] = this.trackedMetrics[namespace][name].printObj();
-    }
-  }
-  return metricsObj;
-}
-
-},{"./counter":3,"./histogram":5,"./meter":6,"./timer":7}],5:[function(_dereq_,module,exports){
+},{}],5:[function(_dereq_,module,exports){
 var EDS = _dereq_('../stats/exponentially_decaying_sample')
   , UniformSample = _dereq_('../stats/uniform_sample');
 
@@ -409,7 +364,15 @@ module.exports.createExponentialDecayHistogram = function(size, alpha) { return 
 module.exports.createUniformHistogram = function(size) { return new Histogram(new UniformSample((size || 1028))); };
 module.exports.DEFAULT_PERCENTILES = DEFAULT_PERCENTILES;
 
-},{"../stats/exponentially_decaying_sample":8,"../stats/uniform_sample":11}],6:[function(_dereq_,module,exports){
+},{"../stats/exponentially_decaying_sample":10,"../stats/uniform_sample":13}],6:[function(_dereq_,module,exports){
+
+exports.Counter = _dereq_('./counter');
+exports.Histogram = _dereq_('./histogram');
+exports.Meter = _dereq_('./meter');
+exports.Timer = _dereq_('./timer');
+
+
+},{"./counter":4,"./histogram":5,"./meter":7,"./timer":8}],7:[function(_dereq_,module,exports){
 var EWMA = _dereq_('../stats/exponentially_weighted_moving_average.js');
 /*
 *  
@@ -472,7 +435,7 @@ Meter.prototype.tick = function(){
   this.m15Rate.tick();
 }
 
-},{"../stats/exponentially_weighted_moving_average.js":9}],7:[function(_dereq_,module,exports){
+},{"../stats/exponentially_weighted_moving_average.js":11}],8:[function(_dereq_,module,exports){
 var Meter = _dereq_('./meter');
 Histogram = _dereq_('./histogram')
 ExponentiallyDecayingSample = _dereq_('../stats/exponentially_decaying_sample');
@@ -515,7 +478,55 @@ Timer.prototype.printObj = function() {
 }
 
 
-},{"../stats/exponentially_decaying_sample":8,"./histogram":5,"./meter":6}],8:[function(_dereq_,module,exports){
+},{"../stats/exponentially_decaying_sample":10,"./histogram":5,"./meter":7}],9:[function(_dereq_,module,exports){
+/**
+* trackedMetrics is an object with eventTypes as keys and metrics object as values.
+*/
+
+var _evtparse = function (eventName){
+  var namespaces = eventName.split('.')
+    , name = namespaces.pop()
+    , namespace = namespaces.join('.');
+
+  return {
+    ns: namespace
+  , name: name
+  }
+}
+
+var Report = module.exports = function (trackedMetrics){
+  this.trackedMetrics = trackedMetrics || {};
+}
+
+Report.prototype.addMetric = function(eventName, metric) {
+  var parts = _evtparse(eventName);
+
+  if (!this.trackedMetrics[parts.ns]) {
+    this.trackedMetrics[parts.ns] = {};
+  }
+  if(!this.trackedMetrics[parts.ns][parts.name]) {
+    this.trackedMetrics[parts.ns][parts.name] = metric;
+  }
+}
+
+Report.prototype.getMetric = function (eventName){
+  var parts = _evtparse(eventName);
+  if (!this.trackedMetrics[parts.ns]){ return; }
+  return this.trackedMetrics[parts.ns][parts.name];
+}
+
+Report.prototype.summary = function (){
+  var metricsObj = {};
+  for (namespace in this.trackedMetrics) {
+    metricsObj[namespace] = {};
+    for (name in this.trackedMetrics[namespace]) {
+      metricsObj[namespace][name] = this.trackedMetrics[namespace][name].printObj();
+    }
+  }
+  return metricsObj;
+}
+
+},{}],10:[function(_dereq_,module,exports){
 var Sample = _dereq_('./sample')
   , BinaryHeap = _dereq_('../lib/binary_heap');
 
@@ -612,7 +623,7 @@ ExponentiallyDecayingSample.prototype.rescale = function(now) {
   this.values.content = newContent;
 }
 
-},{"../lib/binary_heap":1,"./sample":10}],9:[function(_dereq_,module,exports){
+},{"../lib/binary_heap":2,"./sample":12}],11:[function(_dereq_,module,exports){
 /*
  *  Exponentially weighted moving average.
  *  Args: 
@@ -673,7 +684,7 @@ module.exports.createM1EWMA = function(){ return new EWMA(M1_ALPHA, 5000); }
 module.exports.createM5EWMA = function(){ return new EWMA(M5_ALPHA, 5000); }
 module.exports.createM15EWMA = function(){ return new EWMA(M15_ALPHA, 5000); }
 
-},{}],10:[function(_dereq_,module,exports){
+},{}],12:[function(_dereq_,module,exports){
 var Sample = module.exports = function Sample() {
   this.values = [];
   this.count = 0;
@@ -687,7 +698,7 @@ Sample.prototype.print = function(){console.log(this.values);}
 Sample.prototype.getValues = function(){ return this.values; }
 
 
-},{}],11:[function(_dereq_,module,exports){
+},{}],13:[function(_dereq_,module,exports){
 var utils = _dereq_('../lib/utils');
 var Sample = _dereq_('./sample');
 
@@ -715,6 +726,6 @@ UniformSample.prototype.update = function(val) {
   }
 }
 
-},{"../lib/utils":2,"./sample":10}]},{},[4])
-(4)
+},{"../lib/utils":3,"./sample":12}]},{},[1])
+(1)
 });

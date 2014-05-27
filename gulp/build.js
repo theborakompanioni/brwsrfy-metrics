@@ -10,8 +10,7 @@ var concat = require('gulp-concat');
 gulp.task('browserify', function () {
        // Single entry point to browserify
     return gulp.src([
-      'node_modules/metrics/metrics/index.js',
-      'node_modules/metrics/reporting/report.js'
+      'index.js'
       ])
       .pipe(concat('brwsrfy-metrics.js'))
       .pipe(browserify({
