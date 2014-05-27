@@ -1,0 +1,4 @@
+brwsrfy-metrics
+===============
+
+metrics browserified
